@@ -28,6 +28,9 @@ O nome acima é ilustrativo: a sugestão depende do conteúdo. Sem data explíci
 
 ```text
 smart-file-organizer/
+├── .devcontainer/devcontainer.json # Ambiente Python 3.12 do Codespaces
+├── scripts/setup.sh              # Prepara Python/venv e dependências
+├── scripts/test.sh               # Lint, testes e demonstração
 ├── main.py                      # Script principal completo e comentado
 ├── requirements.txt             # Dependências de execução
 ├── requirements-dev.txt         # Testes e lint
@@ -35,10 +38,59 @@ smart-file-organizer/
 ├── .env.example                 # Exemplo sem credencial real
 ├── .gitignore
 ├── .github/workflows/ci.yml
+├── examples/demo.py              # Demonstração sem chave ou com --live
 ├── examples/nota_fiscal.txt      # Documento fictício
+├── tests/test_demo.py            # Extração de PDF e fluxo da demonstração
 ├── tests/test_main.py
 └── README.md
 ```
+
+## Início rápido no GitHub Codespaces
+
+O projeto inclui `.devcontainer/devcontainer.json` com Python 3.12 e instalação automática das dependências em `.venv`. Em um Codespace novo, aguarde o término do `postCreateCommand`.
+
+**Se o Codespace já estava aberto antes desta configuração**, atualize e instale pelo terminal:
+
+```bash
+git pull --ff-only origin main
+bash scripts/setup.sh
+source .venv/bin/activate
+python -m examples.demo
+```
+
+O instalador usa Python 3.11+ já disponível; se não encontrar Python, tenta instalar `python3` e `python3-venv` via apt em Debian/Ubuntu. Para garantir a imagem com Python 3.12, abra a paleta (`Ctrl+Shift+P`) e execute **Codespaces: Rebuild Container** depois do pull. Isso também executa o instalador automaticamente. O instalador preserva um `.env` existente.
+
+A demonstração padrão não precisa de chave e não faz chamadas de rede. Gera quatro documentos fictícios (TXT, PDF com texto, DOCX e PNG), usa classificações fixas e chama a extração e a cópia reais do organizador. Verifica SHA-256 e a extensão original de cada arquivo. Os resultados ficam em `demo-data/run-.../organizados/`, com pastas e nomes diferentes; os originais ficam em `entrada/`. Cada execução cria uma pasta nova.
+
+```text
+organizados/Financeiro/NotasFiscais/2026-10-16_NotaFiscal_LojaExemplo.TXT
+organizados/Estudos/Apostilas/2026-10-16_Apostila_Python.PDF
+organizados/Trabalho/Contratos/2026-10-16_Contrato_EmpresaExemplo.docx
+organizados/Midia/CapturasDeTela/2026-10-16_Captura_FileMind.PNG
+```
+
+Esse modo demonstra a organização, mas **não testa inteligência semântica**: suas respostas são fixas para os arquivos fictícios. Para testar a Groq real, preencha sua chave em `.env` e execute:
+
+```bash
+python -m examples.demo --live
+```
+
+`--live` envia os exemplos à API, consome cota e pode produzir nomes/categorias diferentes. Imagens continuam sem reconhecimento visual neste exemplo: são enviadas apenas informações textuais/metadados.
+
+Para rodar lint, testes e demonstração em uma sequência:
+
+```bash
+bash scripts/test.sh
+```
+
+Para monitorar uma pasta no Codespace com a IA real:
+
+```bash
+mkdir -p entrada
+python main.py --watch ./entrada --output ./organizados --apply
+```
+
+Envie arquivos para `entrada` pelo explorador do VS Code. **O Codespace monitora pastas do servidor, não o Downloads do seu computador.** Para monitorar Downloads localmente, instale e execute o projeto no seu computador. O monitor só funciona enquanto seu processo e o Codespace estiverem ativos.
 
 ## Requisitos e instalação
 
