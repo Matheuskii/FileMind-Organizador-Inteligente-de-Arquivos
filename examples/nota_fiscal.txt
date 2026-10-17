@@ -1,0 +1,6 @@
+NOTA FISCAL DE COMPRA
+Emissão: 16/10/2026
+Fornecedor: Loja Exemplo
+Produto: Teclado USB
+Total: R$ 120,00
+Documento fictício para demonstração do organizador.
